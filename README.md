@@ -95,8 +95,18 @@ AddController___Input(AxisValue * Rate * GetWorld()->GetDeltaSeconds() )
     ```c++
     UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class AGun> GunClass;
-
-	UPROPERTY()
-	class AGun* Gun;
+# 13, replace the weapon 
+- go to the skeleton, find the weapon's name, hide it
+- ```c++
+  ENGINE_API void HideBoneByName( FName BoneName, EPhysBodyOp PhysBodyOption );
     ```
+- find the attached skeleton, add a new socket
+- ```c++
+  Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("Weapon_Socket"));
+  ```
+- setowner fro the weapon
+- ```c++
+  Gun->SetOwner(this);
+  ```
+- adjust the weapon position.
   

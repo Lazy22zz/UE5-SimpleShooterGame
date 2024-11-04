@@ -17,6 +17,11 @@ AGun::AGun()
 	Mesh -> SetupAttachment(root);
 }
 
+void AGun::PullTrigger()
+{
+	UE_LOG(LogTemp, Warning, TEXT("You Pull The Trigger!"));
+}
+
 // Called when the game starts or when spawned
 void AGun::BeginPlay()
 {

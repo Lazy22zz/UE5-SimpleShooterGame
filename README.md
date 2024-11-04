@@ -171,7 +171,7 @@ DrawDebugPoint(GetWorld(), Location, 2, FColor::Red, true);
 ```
 - the final will belike
 ```c++
-FVector start = Location;
+	FVector start = Location;
 	FVector end = Location + Rotation.Vector() * MaxRange_Bullet;
 
 	// TODO: LineTrace

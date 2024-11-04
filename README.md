@@ -110,4 +110,21 @@ AddController___Input(AxisValue * Rate * GetWorld()->GetDeltaSeconds() )
   Gun->SetOwner(this);
   ```
 - adjust the weapon position.
-  
+# 14, Shooting Architure
+- create a pulltrigger() in gun file
+ ```c++
+  void AGun::PullTrigger()
+{
+	UE_LOG(LogTemp, Warning, TEXT("You Pull The Trigger!"));
+}
+```
+- enable character bind the action, gun object is created, so use it.
+```c++
+PlayerInputComponent -> BindAction (TEXT("Shoot"), EInputEvent::IE_Pressed, this, &AShooterCharacter::Shoot);
+```
+```c++
+void AShooterCharacter::Shoot()
+{
+	Gun -> PullTrigger();
+}
+```

@@ -3,6 +3,8 @@
 - F8, see the relate header
 - F12, see the define function
 - ctr + shift+ p, quick implement a function.
+- ctr + p, find the file
+- ctr+shift+o, find the specific function
 # 1, Add Movement Function
 ```c++
 void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -128,3 +130,12 @@ void AShooterCharacter::Shoot()
 	Gun -> PullTrigger();
 }
 ```
+# 15, add a muzle for the gun
+```c++
+static ENGINE_API UParticleSystemComponent* SpawnEmitterAttached(class UParticleSystem* EmitterTemplate, class USceneComponent* AttachToComponent, FName AttachPointName = NAME_None, FVector Location = FVector(ForceInit), FRotator Rotation = FRotator::ZeroRotator, FVector Scale = FVector(1.f), EAttachLocation::Type LocationType = EAttachLocation::KeepRelativeOffset, bool bAutoDestroy = true, EPSCPoolMethod PoolingMethod = EPSCPoolMethod::None, bool bAutoActivate=true);
+```
+- replace the ue_log
+```c++
+UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, Mesh, TEXT("MuzzleFlashSocket"));
+```
+- add the muzzle

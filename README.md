@@ -2,6 +2,7 @@
 # HOTKEYS:
 - F8, see the relate header
 - F12, see the define function
+- ctr + shift+ p, quick implement a function.
 # 1, Add Movement Function
 ```c++
 void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

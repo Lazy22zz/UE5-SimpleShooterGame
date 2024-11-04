@@ -150,3 +150,36 @@ ENGINE_API void DrawDebugCamera(const UWorld* InWorld, FVector const& Location, 
 ```c++
 void AController::GetPlayerViewPoint( FVector& out_Location, FRotator& out_Rotation ) const
 ```
+# 17, Line Tracing By Channel
+- Engine- collison
+- Object Channel: Object channels are used to define the type of an object in the game world.
+- Trace Channel: Trace channels are used for line, sphere, or shape traces (commonly known as raycasting) to check for collisions or overlaps. Traces help determine what kind of objects a trace "hits" or interacts with in the scene.
+- use trace channel for bullet
+- enable some specific collision preset
+- in code, world.h
+```c++
+bool LineTraceSingleByChannel(struct FHitResult& OutHit,const FVector& Start,const FVector& End,ECollisionChannel TraceChannel,const FCollisionQueryParams& Params = FCollisionQueryParams::DefaultQueryParam, const FCollisionResponseParams& ResponseParam = FCollisionResponseParams::DefaultResponseParam) const;
+```
+- to find the ECollisionChannel, go to folder -> config -> DefaultEngine.ini
+- search for bullet (just created)
+```c++
+DefaultChannelResponses=(Channel=ECC_GameTraceChannel1,DefaultResponse=ECR_Block,bTraceType=True,bStaticObject=False,Name="Bullet")
+```
+- use the drawdebugpoint
+```c++
+DrawDebugPoint(GetWorld(), Location, 2, FColor::Red, true);
+```
+- the final will belike
+```c++
+FVector start = Location;
+	FVector end = Location + Rotation.Vector() * MaxRange_Bullet;
+
+	// TODO: LineTrace
+
+	FHitResult OutHit;
+	bool bsuccess = GetWorld() -> LineTraceSingleByChannel(OutHit, start, end, ECollisionChannel::ECC_EngineTraceChannel1);
+	if (bsuccess)
+	{
+		DrawDebugPoint(GetWorld(), OutHit.Location, 20, FColor::Red, true);
+	}
+```

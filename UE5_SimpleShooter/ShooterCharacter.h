@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "ShooterCharacter.generated.h"
 
+//class AGun;
+
 UCLASS()
 class UE5_SIMPLESHOOTER_API AShooterCharacter : public ACharacter
 {
@@ -37,5 +39,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	float RotationRate = 10;
 
-	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class AGun> GunClass;
+
+	UPROPERTY()
+	class AGun* Gun;
 };

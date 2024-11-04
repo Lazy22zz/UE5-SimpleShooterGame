@@ -139,3 +139,14 @@ static ENGINE_API UParticleSystemComponent* SpawnEmitterAttached(class UParticle
 UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, Mesh, TEXT("MuzzleFlashSocket"));
 ```
 - add the muzzle
+# 16, enable the player view point (prepare for the ray tracing for gun)
+- use the drawdebughelper.h
+```c++
+ENGINE_API void DrawDebugCamera(const UWorld* InWorld, FVector const& Location, FRotator const& Rotation, float FOVDeg, float Scale=1.f, FColor const& Color=FColor::White, bool bPersistentLines=false, float LifeTime=-1.f, uint8 DepthPriority = 0);
+```
+- but this is the view camera for the gun, we need to change the view to the Acontroller (which can find in Controller.cpp)
+- using cast to convert to the pawn
+- use this pawn to getcontroller
+```c++
+void AController::GetPlayerViewPoint( FVector& out_Location, FRotator& out_Rotation ) const
+```

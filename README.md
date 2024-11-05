@@ -183,3 +183,13 @@ DrawDebugPoint(GetWorld(), Location, 2, FColor::Red, true);
 		DrawDebugPoint(GetWorld(), OutHit.Location, 20, FColor::Red, true);
 	}
 ```
+# 18, spwan the impact effects
+```c++
+static ENGINE_API UParticleSystemComponent* SpawnEmitterAtLocation(const UObject* WorldContextObject, UParticleSystem* EmitterTemplate, FVector Location, FRotator Rotation, bool bAutoDestroy, EPSCPoolMethod PoolingMethod = EPSCPoolMethod::None, bool bAutoActivateSystem =true);
+```
+- remember the rotation should be negative.
+```c++
+FVector ShotDirection = -Rotation.Vector();
+UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, OutHit.Location, ShotDirection.Rotation());
+```
+# 19, 

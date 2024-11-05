@@ -211,4 +211,6 @@ FPointDamageEvent(float InDamage, const FHitResult& InHitInfo, FVector const& In
 			HitActor -> TakeDamage(Gun_Damage, DamageEvent, OwnerController, this);
 		}
 ```
-# 20, 
+# 20, VIRTUAL METHODS IN C++
+- Virtual : create polymorphic behavior in classes, allowing functions to be overridden in derived classes.
+- Override : enable the programmer to see which functions are overriden. 

@@ -41,4 +41,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float MaxRange_Bullet = 1000;
+
+	UPROPERTY(EditAnywhere)
+	float Gun_Damage = 10;
 };

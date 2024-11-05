@@ -192,4 +192,23 @@ static ENGINE_API UParticleSystemComponent* SpawnEmitterAtLocation(const UObject
 FVector ShotDirection = -Rotation.Vector();
 UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, OutHit.Location, ShotDirection.Rotation());
 ```
-# 19, 
+# 19, Take Damage
+- In Actor.h
+```c++
+ENGINE_API virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+```
+- In DamageEvents.h
+```c++
+FPointDamageEvent(float InDamage, const FHitResult& InHitInfo, FVector const& InShotDirection, TSubclassOf<UDamageType> InDamageTypeClass)
+		: FDamageEvent(InDamageTypeClass), Damage(InDamage), ShotDirection(InShotDirection), HitInfo(InHitInfo)
+```
+- Dont forget to include the header
+```c++
+		FPointDamageEvent DamageEvent(Gun_Damage, OutHit, ShotDirection, nullptr);
+		AActor* HitActor = OutHit.GetActor();
+		if (HitActor)
+		{
+			HitActor -> TakeDamage(Gun_Damage, DamageEvent, OwnerController, this);
+		}
+```
+# 20, 

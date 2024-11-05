@@ -214,3 +214,16 @@ FPointDamageEvent(float InDamage, const FHitResult& InHitInfo, FVector const& In
 # 20, VIRTUAL METHODS IN C++
 - Virtual : create polymorphic behavior in classes, allowing functions to be overridden in derived classes.
 - Override : enable the programmer to see which functions are overriden. 
+- Super:: : helping the override functions re-use.
+- Implement the takedamage for actor in shootercharacter.cpp
+```c++
+float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
+{
+	float GetDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	GetDamage = FMath::Min(HP, GetDamage);
+	HP = HP - GetDamage;
+	UE_LOG(LogTemp, Warning, TEXT("Health Left: %f"), HP);
+
+	return GetDamage;
+}
+```

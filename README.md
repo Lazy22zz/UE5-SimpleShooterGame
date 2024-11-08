@@ -266,3 +266,30 @@ AIMODULE_API EPathFollowingRequestResult::Type MoveToActor(AActor* Goal, float A
 		TSubclassOf<UNavigationQueryFilter> FilterClass = NULL, bool bAllowPartialPath = true);
 ```
 - Put it in Tick() function
+# 26, Stop AI following
+- using AIcontroller.h
+```c++
+AIMODULE_API virtual void ClearFocus(EAIFocusPriority::Type InPriority);
+AIMODULE_API virtual void StopMovement() override;
+```
+- the new one will be like
+```c++
+void AShooterAIController::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+
+    AActor* FocusPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+
+    if (LineOfSightTo(FocusPawn))
+    {
+        SetFocus(FocusPawn);
+        MoveToActor(FocusPawn, AcceptanceRadius);
+    }
+    else
+    {
+        ClearFocus(2);
+        StopMovement();
+    }
+
+}
+```

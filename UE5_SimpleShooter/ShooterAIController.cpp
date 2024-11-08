@@ -10,4 +10,13 @@ void AShooterAIController::BeginPlay()
 
     AActor* FocusPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
     SetFocus(FocusPawn, 2);
+
+}
+
+void AShooterAIController::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+
+    AActor* FocusPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+    MoveToActor(FocusPawn, 500);
 }

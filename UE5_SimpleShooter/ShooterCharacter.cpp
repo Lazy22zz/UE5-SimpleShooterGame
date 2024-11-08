@@ -36,6 +36,20 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 	return GetDamage;
 }
 
+bool AShooterCharacter::IsDead() const
+{
+	bool Is_Dead = true;
+	if (HP <= 0)
+	{
+		Is_Dead = true;
+	}
+	else{
+		Is_Dead = false;
+	}
+	return Is_Dead;
+}
+
+
 // Called every frame
 void AShooterCharacter::Tick(float DeltaTime)
 {

@@ -257,3 +257,12 @@ void AShooterAIController::BeginPlay()
     SetFocus(FocusPawn, 2);
 }
 ```
+# 25, AI following
+- create a NavMeshBound too enable to do A* Algorithm path searching
+- using AiController.h
+```c++
+AIMODULE_API EPathFollowingRequestResult::Type MoveToActor(AActor* Goal, float AcceptanceRadius = -1, bool bStopOnOverlap = true,
+		bool bUsePathfinding = true, bool bCanStrafe = true,
+		TSubclassOf<UNavigationQueryFilter> FilterClass = NULL, bool bAllowPartialPath = true);
+```
+- Put it in Tick() function

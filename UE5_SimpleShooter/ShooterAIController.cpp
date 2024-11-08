@@ -18,5 +18,16 @@ void AShooterAIController::Tick(float DeltaSeconds)
     Super::Tick(DeltaSeconds);
 
     AActor* FocusPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-    MoveToActor(FocusPawn, 500);
+
+    if (LineOfSightTo(FocusPawn))
+    {
+        SetFocus(FocusPawn);
+        MoveToActor(FocusPawn, AcceptanceRadius);
+    }
+    else
+    {
+        ClearFocus(2);
+        StopMovement();
+    }
+
 }

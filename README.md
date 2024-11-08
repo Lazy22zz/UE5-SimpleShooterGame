@@ -227,3 +227,12 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 	return GetDamage;
 }
 ```
+# 21, Add blend poss by bool
+- add a new branch, create a new variable: Is_Dead
+- for the dead_Forward animation, stop the loop animation.
+# 22, Add pure function to enable deadplay animation
+```c++
+UFUNCTION(BlueprintPure)
+bool IsDead() const;
+```
+- in blueprint, cast pawn to shooter_character, then get Is_Dead and set Is_Dead

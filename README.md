@@ -236,3 +236,24 @@ UFUNCTION(BlueprintPure)
 bool IsDead() const;
 ```
 - in blueprint, cast pawn to shooter_character, then get Is_Dead and set Is_Dead
+# 23, Create a AI controller
+- create a bp subclass
+- enable the new bp-aicontroller for the pawn(change the ai_controller of shooter character)
+# 24, enable AI aiming
+- In AIcontroller.h
+```c++
+AIMODULE_API virtual void SetFocalPoint(FVector NewFocus, EAIFocusPriority::Type InPriority = EAIFocusPriority::Gameplay);
+AIMODULE_API virtual void SetFocus(AActor* NewFocus, EAIFocusPriority::Type InPriority = EAIFocusPriority::Gameplay);
+```
+- we have two options:
+- 1, using Gameplaystatic::GetPlayerPawn(), which will return AActor
+- 2, using AActor::GetPlayerLocation(), which will return FVector
+```c++
+void AShooterAIController::BeginPlay()
+{
+    Super::BeginPlay();
+
+    AActor* FocusPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+    SetFocus(FocusPawn, 2);
+}
+```

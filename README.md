@@ -293,3 +293,11 @@ void AShooterAIController::Tick(float DeltaSeconds)
 
 }
 ```
+# 27， using BehaviourTrees and Blackboard
+- create BehaviourTree and BlackBoard
+- in Aicontroller.h
+```c++
+	UPROPERTY(EditAnywhere)
+	class UBehaviorTree* AIEnemyBehaviour;
+```
+- Hook up the Behaviourtree in Bp_aicontroller

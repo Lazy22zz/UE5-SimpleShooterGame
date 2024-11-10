@@ -301,3 +301,52 @@ void AShooterAIController::Tick(float DeltaSeconds)
 	class UBehaviorTree* AIEnemyBehaviour;
 ```
 - Hook up the Behaviourtree in Bp_aicontroller
+# 28, Editing BlackBoard
+- in Aicontroller.h
+```c++
+UBlackboardComponent* GetBlackboardComponent() { return Blackboard; }
+```
+- in BlackBoardComponent.h
+```c++
+AIMODULE_API void SetValueAs___
+```
+- in AIcontroller.cpp
+```c++
+if(AIEnemyBehaviour)
+   {
+    RunBehaviorTree(AIEnemyBehaviour);
+    AActor* FocusPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+    GetBlackboardComponent() -> SetValueAsVector(TEXT("PlayerLocation"), FocusPawn -> GetActorLocation());
+   }
+```
+# 29, Modify the BehaviourTree
+- ![屏幕截图 2024-11-10 111341](https://github.com/user-attachments/assets/803fb3a9-4d11-410b-9b26-9f11ff28c591)
+- in AIcontroller.cpp
+```c++
+FVector StartLocation = GetPawn() -> GetActorLocation();
+GetBlackboardComponent() -> SetValueAsVector(TEXT("StartLocation"), StartLocation);
+```
+#30, Expand : Modify the Behaviour Tree
+- ![屏幕截图 2024-11-10 115345](https://github.com/user-attachments/assets/2e36f209-9938-4d56-9113-0fb4488c8499)
+- Hints: right click the Sequence, pick the BlackBoard
+- Hints: Click the BlackBoard Base Condition, choose the observour aborts : both
+- In AIController.cpp
+```c++
+void AShooterAIController::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+
+    FocusPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+    if (LineOfSightTo(FocusPawn))
+    {
+        GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), FocusPawn -> GetActorLocation());
+        GetBlackboardComponent()->SetValueAsVector(TEXT("LastKnownPlayerLocation"), FocusPawn -> GetActorLocation());
+    }
+    else
+    {
+        GetBlackboardComponent()->ClearValue(TEXT("PlayerLocation"));
+    }
+
+}
+```
+#31, 

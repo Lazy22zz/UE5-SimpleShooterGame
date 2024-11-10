@@ -326,7 +326,7 @@ if(AIEnemyBehaviour)
 FVector StartLocation = GetPawn() -> GetActorLocation();
 GetBlackboardComponent() -> SetValueAsVector(TEXT("StartLocation"), StartLocation);
 ```
-#30, Expand : Modify the Behaviour Tree
+# 30, Expand : Modify the Behaviour Tree
 - ![屏幕截图 2024-11-10 115345](https://github.com/user-attachments/assets/2e36f209-9938-4d56-9113-0fb4488c8499)
 - Hints: right click the Sequence, pick the BlackBoard
 - Hints: Click the BlackBoard Base Condition, choose the observour aborts : both
@@ -349,4 +349,78 @@ void AShooterAIController::Tick(float DeltaSeconds)
 
 }
 ```
-#31, 
+# 31, custom BTask in c++
+- create a c++ for BTTask_blackboardbase
+- in the UBTTask_ClearBlackboardBaseValue.cpp
+```c++
+UBTTask_ClearBlackboardBaseValue::UBTTask_ClearBlackboardBaseValue()
+{
+    NodeName = "Clear Blackboard Value";
+}
+```
+- And add some Blackboard keys in the blackboard node
+- ![屏幕截图 2024-11-10 140105](https://github.com/user-attachments/assets/807f9f6a-b531-497d-9d02-718f290e387f)
+# 32, Excutting the Bttask (*IMPORTANT*)
+- Purpose: clear all previous action 
+- in bttasknode.h
+```c++
+AIMODULE_API virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory);
+```
+- Then, we nned to clear the blackboard componment
+- in attask_blackboardbase.h
+```c++
+/** get name of selected blackboard key */
+AIMODULE_API FName GetSelectedBlackboardKey() const;
+```
+- In AIController.h
+```c++
+const UBlackboardComponent* GetBlackboardComponent() const { return Blackboard; }
+```
+- In bttask_clearblackboardvalue.h
+```c++
+EBTNodeResult::Type UBTTask_ClearBlackboardBaseValue::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+{
+    Super::ExecuteTask(OwnerComp, NodeMemory);
+
+    OwnerComp.GetBlackboardComponent()->ClearValue(GetSelectedBlackboardKey());
+
+    return EBTNodeResult::Succeeded;
+
+}
+```
+# EXTRA: DIFFERENCE BETWEEN BTTASKBLACKBOARDNODE AND BTTASKBLACKBOARDBASE
+- Use UBTTaskNode if your task is more general-purpose and does not need to reference a specific Blackboard key.
+- Use UBTTask_BlackboardBase if your task directly interacts with a Blackboard key, as it simplifies code and setup in the Behavior Tree Editor.
+# 33, Create a Shoot() blackboardnode(*important*)
+- enable the shoot() in shootercharacter.h to be public
+- in braincomponent.h
+```c++
+FORCEINLINE AAIController* GetAIOwner() const { return AIOwner; }
+```
+- class UBehaviorTreeComponent : public UBrainComponent
+- then, we can use cast <>() to get the AShooter class to enable to use getpawn()
+- in AIcontroller.h
+```c++
+/** Getter for Pawn */
+FORCEINLINE APawn* GetPawn() const { return Pawn; }
+```
+- adjusted:
+```c++
+EBTNodeResult::Type UBT_Shoot::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+{
+    Super::ExecuteTask(OwnerComp, NodeMemory);
+
+    if (OwnerComp.GetAIOwner() == nullptr)
+    {
+        return EBTNodeResult::Failed;
+    }
+
+    AShooterCharacter* AICharacter = Cast<AShooterCharacter>(OwnerComp.GetAIOwner()->GetPawn());
+    if (AICharacter)
+    {
+        AICharacter -> Shoot();
+    }
+    return EBTNodeResult::Succeeded;
+}
+```
+- `HINT`: in blackboard's (Node: Move to), check the observed blackboard value will auto update when the player character moves, the playerLocation will update in each frame

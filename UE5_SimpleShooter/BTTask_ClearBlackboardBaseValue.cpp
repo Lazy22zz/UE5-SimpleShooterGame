@@ -2,6 +2,7 @@
 
 
 #include "BTTask_ClearBlackboardBaseValue.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 UBTTask_ClearBlackboardBaseValue::UBTTask_ClearBlackboardBaseValue()
 {
@@ -12,5 +13,8 @@ EBTNodeResult::Type UBTTask_ClearBlackboardBaseValue::ExecuteTask(UBehaviorTreeC
 {
     Super::ExecuteTask(OwnerComp, NodeMemory);
 
-    OwnerComp.GetSelectedBlackBoardKey();
+    OwnerComp.GetBlackboardComponent()->ClearValue(GetSelectedBlackboardKey());
+
+    return EBTNodeResult::Succeeded;
+
 }

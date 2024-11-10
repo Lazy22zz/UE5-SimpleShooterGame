@@ -15,4 +15,7 @@ class UE5_SIMPLESHOOTER_API UBTTask_ClearBlackboardBaseValue : public UBTTask_Bl
 	GENERATED_BODY()
 public:
 	UBTTask_ClearBlackboardBaseValue();
+
+protected:
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 };

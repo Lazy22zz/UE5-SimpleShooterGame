@@ -7,3 +7,10 @@ UBTTask_ClearBlackboardBaseValue::UBTTask_ClearBlackboardBaseValue()
 {
     NodeName = "Clear Blackboard Value";
 }
+
+EBTNodeResult::Type UBTTask_ClearBlackboardBaseValue::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+{
+    Super::ExecuteTask(OwnerComp, NodeMemory);
+
+    OwnerComp.GetSelectedBlackBoardKey();
+}

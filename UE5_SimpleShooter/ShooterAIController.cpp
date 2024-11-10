@@ -18,7 +18,9 @@ void AShooterAIController::BeginPlay()
    {
     RunBehaviorTree(AIEnemyBehaviour);
     AActor* FocusPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+    FVector StartLocation = GetPawn() -> GetActorLocation();
     GetBlackboardComponent() -> SetValueAsVector(TEXT("PlayerLocation"), FocusPawn -> GetActorLocation());
+    GetBlackboardComponent() -> SetValueAsVector(TEXT("StartLocation"), StartLocation);
    }
 }
 

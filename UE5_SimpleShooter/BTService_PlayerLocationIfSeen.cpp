@@ -16,6 +16,17 @@ void UBTService_PlayerLocationIfSeen::TickNode(UBehaviorTreeComponent &OwnerComp
     Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
     APawn* FocusPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+
+    if (FocusPawn == nullptr)
+    {
+        return;
+    }
+
+    if (OwnerComp.GetAIOwner() == nullptr)
+    {
+        return;
+    }
+
     if (AIController -> LineOfSightTo(FocusPawn))
     {
         OwnerComp.GetBlackboardComponent() -> SetValueAsVector(GetSelectedBlackboardKey(), FocusPawn -> GetActorLocation());

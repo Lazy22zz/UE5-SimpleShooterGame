@@ -514,4 +514,21 @@ void UBTService_PlayerLocationIfSeen::TickNode(UBehaviorTreeComponent &OwnerComp
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 ```
-# 36,
+# 36, Ending the Game
+- ![屏幕截图 2024-11-11 102750](https://github.com/user-attachments/assets/24b6ff91-ac4d-4d42-b1d9-d55df1bd61da)
+- Create a new c++ KillEmAllGameMode inherited the Simpleshootergamemode
+- In simpleShooterGameMode.h
+- create a public function, `PawnKilled()`
+- in KillEmAllGameMode.h, enable the virtual function `PawnKilled()`
+- Then, if a pawn is skilled, we need to call the `PawnKilled()`
+- In ShooterCharacter.cpp 's TakeDamage()
+```c++
+ASimpleShooterGameModeBase* GameMode = GetWorld()->GetAuthGameMode<ASimpleShooterGameModeBase>();
+		if (GameMode != nullptr)
+		{
+			GameMode->PawnKilled(this);
+		}
+```
+- in project setting, changes its gamemode to KillenAllgamemode
+- In `BP_KilleAllEmyGameModeBase`, confirm the parent class is `KilleAllEmyGameModeBase`.
+

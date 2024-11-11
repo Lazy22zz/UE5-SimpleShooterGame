@@ -424,3 +424,94 @@ EBTNodeResult::Type UBT_Shoot::ExecuteTask(UBehaviorTreeComponent& OwnerComp, ui
 }
 ```
 - `HINT`: in blackboard's (Node: Move to), check the observed blackboard value will auto update when the player character moves, the playerLocation will update in each frame
+# 34， Add BTservice(*important*)
+- Goal: simplify the BehaviourTree, which not need to use AI controller to do update Player location
+- right click the sequence, add a default focus, which will auto focus the set player location
+- Create a BTservice c++
+- In BTService_PlayerLocation.cpp
+```c++
+UBTService_PlayerLocation::UBTService_PlayerLocation()
+{
+    NodeName = "Update Player Location";
+}
+```
+- In BTservice.h, using the TickNode {auto update the location value}
+```c++
+Because some of them can be instanced for specific AI, following virtual functions are not marked as const:
+ *   - OnBecomeRelevant (from UBTAuxiliaryNode)
+ *   - OnCeaseRelevant (from UBTAuxiliaryNode)
+ *   - TickNode (from UBTAuxiliaryNode)
+ *   - OnSearchStart
+```
+- call the Super::TickNode()
+- Similiar as the ShooterAIController.cpp
+```c++
+GetBlackboardComponent() -> SetValueAsVector(TEXT("StartLocation"), FocusPawn -> GetActorLocation());
+```
+- we need to use `GetSelectedBlackboardkey()` to replace the `TEXT()`
+```c++
+void UBTService_PlayerLocation::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 *NodeMemory, float DeltaSeconds)
+{
+    Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
+
+    APawn* FocusPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+    if (FocusPawn == nullptr)
+    {
+        return;
+    }
+
+    OwnerComp.GetBlackboardComponent() -> SetValueAsVector(GetSelectedBlackboardKey(), FocusPawn -> GetActorLocation());
+}
+```
+- And we need to replace the outofsight function
+```c++
+void UBTService_PlayerLocationIfSeen::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 *NodeMemory, float DeltaSeconds)
+{
+    Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
+
+    APawn* FocusPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+
+    if (FocusPawn == nullptr)
+    {
+        return;
+    }
+
+    if (OwnerComp.GetAIOwner() == nullptr)
+    {
+        return;
+    }
+
+    if (AIController -> LineOfSightTo(FocusPawn))
+    {
+        OwnerComp.GetBlackboardComponent() -> SetValueAsVector(GetSelectedBlackboardKey(), FocusPawn -> GetActorLocation());
+    }
+    else
+    {
+        OwnerComp.GetBlackboardComponent() -> ClearValue(GetSelectedBlackboardKey());
+    }
+}
+```
+- Then add those BTServices into the BehaviourTree
+- *IMPORTANT*: we can use `OwnerComp.GetAIOwner()` to find the pawn()
+# 35, Fixing the issue
+- 1, Fix the enemy shooting itself
+- Reason: the capsult. Becasue the bullet starts from the eye, its capsult, gun will get in touch with the character.
+- In Gun.cpp
+```c++
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	Params.AddIgnoredActor(GetOwner());
+
+	bool bsuccess = GetWorld() -> LineTraceSingleByChannel(OutHit, start, end, ECollisionChannel::ECC_GameTraceChannel1, Params);
+```
+- 2, If pawn is died, the collision is still existed, if it is enemy, its still shooting
+- Reason: a, controller still on the pawn; b, capsult is enabled
+- In ShooterCharacter.cpp, TakeDamage()
+```c++
+	if (IsDead())
+	{
+		DetachFromControllerPendingDestroy();
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+```
+# 36,

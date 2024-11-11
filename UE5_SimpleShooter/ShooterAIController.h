@@ -24,7 +24,5 @@ private:
 	UPROPERTY(EditAnywhere)
 	class UBehaviorTree* AIEnemyBehaviour;
 
-	UPROPERTY()
-	AActor* FocusPawn;
 
 };

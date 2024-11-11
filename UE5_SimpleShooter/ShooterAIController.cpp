@@ -17,7 +17,7 @@ void AShooterAIController::BeginPlay()
    if(AIEnemyBehaviour)
    {
     RunBehaviorTree(AIEnemyBehaviour);
-    FocusPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+    APawn* FocusPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
     GetBlackboardComponent() -> SetValueAsVector(TEXT("PlayerLocation"), FocusPawn -> GetActorLocation());
     GetBlackboardComponent() -> SetValueAsVector(TEXT("StartLocation"), FocusPawn -> GetActorLocation());
    }
@@ -27,7 +27,7 @@ void AShooterAIController::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 
-    FocusPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+    APawn* FocusPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
     if (LineOfSightTo(FocusPawn))
     {
         GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), FocusPawn -> GetActorLocation());

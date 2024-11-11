@@ -13,5 +13,7 @@ UCLASS()
 class UE5_SIMPLESHOOTER_API ASimpleShooterGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
+public:
+	virtual void PawnKilled(APawn* Pawn);
 };

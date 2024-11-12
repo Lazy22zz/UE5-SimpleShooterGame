@@ -531,4 +531,36 @@ ASimpleShooterGameModeBase* GameMode = GetWorld()->GetAuthGameMode<ASimpleShoote
 ```
 - in project setting, changes its gamemode to KillenAllgamemode
 - In `BP_KilleAllEmyGameModeBase`, confirm the parent class is `KilleAllEmyGameModeBase`.
+# 37, Game Ended and create a Timer
+- In KillAllEmyGameModeBase.cpp
+- using the GameHasEned() from APlayerController.h
+```c++
+ENGINE_API virtual void GameHasEnded(class AActor* EndGameFocus = nullptr, bool bIsWinner = false) override;
+```
+- Create a new playercontroller `GameEndController`
+- override the `GameHasEnded()`, (hook with the BP_KilleAllEmyGameModeBase)
+- the we get an error:
+```c++
+LoginId:3a831edf45c5b0eb2ea9feaa51bd2ff4
+EpicAccountId:86a98e40ec2d4767bbe8137910abc3bc
 
+Unhandled Exception: EXCEPTION_ACCESS_VIOLATION reading address 0x0000000000000000
+
+UnrealEditor_UE5_SimpleShooter_4548!AKilleAllEmyGameModeBase::PawnKilled() [C:\Doucement\UE5_SimpleShooter\Source\UE5_SimpleShooter\KilleAllEmyGameModeBase.cpp:12]
+UnrealEditor_UE5_SimpleShooter_4548!AShooterCharacter::TakeDamage() [C:\Doucement\UE5_SimpleShooter\Source\UE5_SimpleShooter\ShooterCharacter.cpp:51]
+UnrealEditor_UE5_SimpleShooter_4548!AGun::PullTrigger() [C:\Doucement\UE5_SimpleShooter\Source\UE5_SimpleShooter\Gun.cpp:57]
+```
+- In order to fix it,
+- In shootercharacter.cpp, `DetachFromControllerPendingDestroy();` enable the controller is nullptr.
+- So rerrange the order
+- Set the Timer:
+- In TimerManager.h
+```c++
+FORCEINLINE void SetTimer(FTimerHandle& InOutHandle, FTimerDelegate const& InDelegate, float InRate, bool InbLoop, float InFirstDelay = -1.f)
+```
+- `FTimerDelegate const& InDelegate` is call back the restartlevel() in TimerManager.h
+- In GameEndController.h
+```c++
+GetWorldTimerManager().SetTimer(RestartTimer, this, &APlayerController::RestartLevel, RestartDelay);
+```
+# 38, 

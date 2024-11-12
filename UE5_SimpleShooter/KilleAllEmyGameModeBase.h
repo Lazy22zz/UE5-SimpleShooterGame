@@ -13,7 +13,7 @@ UCLASS()
 class UE5_SIMPLESHOOTER_API AKilleAllEmyGameModeBase : public ASimpleShooterGameModeBase
 {
 	GENERATED_BODY()
-
 public:
-	virtual void PawnKilled(APawn* Pawn) override;
+	void PawnKilled(APawn* PawnKilled);
+
 };

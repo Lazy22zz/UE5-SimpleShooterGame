@@ -666,3 +666,19 @@ void AKilleAllEmyGameModeBase::PawnKilled(APawn *Pawn) // Pawn means the AI enem
 ```
 # 42, re-organize the Gun Trace
 - check the changes of code in Nov 13, 2024 
+- In commit a78c95c
+# 43, Add sound Effect
+- similiar the `#15, add a muzle for the gun`
+- In Gameplaystatics.h
+```c++
+static ENGINE_API UAudioComponent* SpawnSoundAttached(USoundBase* Sound, USceneComponent* AttachToComponent, FName AttachPointName = NAME_None, FVector Location = FVector(ForceInit), FRotator Rotation = FRotator::ZeroRotator, EAttachLocation::Type LocationType = EAttachLocation::KeepRelativeOffset, bool bStopWhenAttachedToDestroyed = false, float VolumeMultiplier = 1.f, float PitchMultiplier = 1.f, float StartTime = 0.f, USoundAttenuation* AttenuationSettings = nullptr, USoundConcurrency* ConcurrencySettings = nullptr, bool bAutoDestroy = true);
+```
+- And
+```c++
+static ENGINE_API void PlaySoundAtLocation(const UObject* WorldContextObject, USoundBase* Sound, FVector Location, FRotator Rotation, float VolumeMultiplier = 1.f, float PitchMultiplier = 1.f, float StartTime = 0.f, class USoundAttenuation* AttenuationSettings = nullptr, USoundConcurrency* ConcurrencySettings = nullptr, const AActor* OwningActor = nullptr, const UInitialActiveSoundParams* InitialParams = nullptr);
+```
+- which is
+```c++
+UGameplayStatics::SpawnSoundAttached(GunSound, Mesh, TEXT("MuzzleFlashSocket"));
+UGameplayStatics::SpawnSoundAtLocation(GetWorld(), ImpactGunSound, Hit.Location);
+```

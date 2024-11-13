@@ -5,18 +5,27 @@
 #include "TimerManager.h"
 #include "EngineUtils.h"
 #include "GameFramework/Controller.h"
+#include "ShooterAIController.h"
 
-
-void AKilleAllEmyGameModeBase::PawnKilled(APawn *Pawn)
+void AKilleAllEmyGameModeBase::PawnKilled(APawn *Pawn) // Pawn means the AI enemy
 {
     Super::PawnKilled(Pawn);
-    //UE_LOG(LogTemp, Warning, TEXT("A Pawn is Killed!"));
     
     APlayerController* PlayerController = Cast<APlayerController>(Pawn->GetController());
     if (PlayerController != nullptr)
     {
-        GameEnd(true);
+        GameEnd(false);
     }
+
+    for (AShooterAIController* Controller : TActorRange<AShooterAIController>(GetWorld()))
+    {
+        if (!Controller->Is_Dead())
+        {
+            return;
+        }
+    }
+
+    GameEnd(true);
 
 }
 

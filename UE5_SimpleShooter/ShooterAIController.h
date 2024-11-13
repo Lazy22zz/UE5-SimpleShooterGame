@@ -16,6 +16,7 @@ class UE5_SIMPLESHOOTER_API AShooterAIController : public AAIController
 
 public:
 	virtual void Tick(float DeltaSeconds) override;
+	bool Is_Dead() const;
 
 protected:
 	virtual void BeginPlay() override;

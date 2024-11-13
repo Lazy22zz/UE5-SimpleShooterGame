@@ -6,14 +6,26 @@
 
 void AGameEndController::GameHasEnded(AActor *EndGameFocus, bool bIsWinner)
 {
+    // Winner is Player Or AI
     Super::GameHasEnded(EndGameFocus, bIsWinner);
-    UE_LOG(LogTemp, Warning, TEXT("Game is Ended!"));
 
-    UUserWidget* LossGameScreenWidget = CreateWidget(this, LoseScreenClass);
-    if (LossGameScreenWidget != nullptr)
+    if (bIsWinner)
     {
-        LossGameScreenWidget -> AddToViewport();
+        UUserWidget* LossGameScreenWidget = CreateWidget(this, WinScreenClass);
+        if (LossGameScreenWidget != nullptr)
+        {
+            LossGameScreenWidget -> AddToViewport();
+        }
     }
+    else
+    {
+        UUserWidget* LossGameScreenWidget = CreateWidget(this, LoseScreenClass);
+        if (LossGameScreenWidget != nullptr)
+        {
+            LossGameScreenWidget -> AddToViewport();
+        }
+    }
+    
 
     GetWorldTimerManager().SetTimer(RestartTimer, this, &APlayerController::RestartLevel, RestartDelay);
 }

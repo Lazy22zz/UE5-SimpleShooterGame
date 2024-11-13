@@ -563,4 +563,27 @@ FORCEINLINE void SetTimer(FTimerHandle& InOutHandle, FTimerDelegate const& InDel
 ```c++
 GetWorldTimerManager().SetTimer(RestartTimer, this, &APlayerController::RestartLevel, RestartDelay);
 ```
-# 38, 
+# 38, Create a LossGameWidget
+- In UserWidget.h
+```c++
+WidgetT* CreateWidget(OwnerType OwningObject, TSubclassOf<UUserWidget> UserWidgetClass = WidgetT::StaticClass(), FName WidgetName = NAME_None)
+```
+- then , using
+```c++
+UUserWidget -> AddToViewport();
+```
+- After compiling, you will get an error.
+```c++
+[1/4] Compile [x64] GameEndController.cpp
+C:\Doucement\UE5_SimpleShooter\Source\UE5_SimpleShooter\GameEndController.cpp(5): fatal error C1083: Cannot open include file: 'Blueprint/UserWidget.h': No such file or directory
+[2/4] Compile [x64] GameEndController.gen.cpp
+C:\Doucement\UE5_SimpleShooter\Intermediate\Build\Win64\UnrealGame\Inc\UE5_SimpleShooter\UHT\GameEndController.gen.cpp(17): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Doucement\UE5_SimpleShooter\Intermediate\Build\Win64\UnrealGame\Inc\UE5_SimpleShooter\UHT\GameEndController.gen.cpp(17): error C2146: syntax error: missing ';' before identifier 'UClass'
+C:\Doucement\UE5_SimpleShooter\Intermediate\Build\Win64\UnrealGame\Inc\UE5_SimpleShooter\UHT\GameEndController.gen.cpp(59): error C2065: 'Z_Construct_UClass_UUserWidget_NoRegister': undeclared identifier
+C:\Doucement\UE5_SimpleShooter\Intermediate\Build\Win64\UnrealGame\Inc\UE5_SimpleShooter\UHT\GameEndController.gen.cpp(59): error C2737: 'NewProp_LoseScreenClass': const object must be initialized
+```
+- In order to fix it, go to the UE5_SimpleShooter.Build.cs
+- Add `UMG` in
+```c#
+PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG" });
+```

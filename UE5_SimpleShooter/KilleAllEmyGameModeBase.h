@@ -16,4 +16,6 @@ class UE5_SIMPLESHOOTER_API AKilleAllEmyGameModeBase : public ASimpleShooterGame
 public:
 	void PawnKilled(APawn* PawnKilled);
 
+private:
+	void GameEnd(bool BIsPlayerWinner);
 };

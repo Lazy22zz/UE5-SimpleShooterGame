@@ -3,6 +3,9 @@
 
 #include "KilleAllEmyGameModeBase.h"
 #include "TimerManager.h"
+#include "EngineUtils.h"
+#include "GameFramework/Controller.h"
+
 
 void AKilleAllEmyGameModeBase::PawnKilled(APawn *Pawn)
 {
@@ -12,7 +15,16 @@ void AKilleAllEmyGameModeBase::PawnKilled(APawn *Pawn)
     APlayerController* PlayerController = Cast<APlayerController>(Pawn->GetController());
     if (PlayerController != nullptr)
     {
-        PlayerController->GameHasEnded(nullptr, false);
+        GameEnd(true);
     }
 
+}
+
+void AKilleAllEmyGameModeBase::GameEnd(bool BIsPlayerWinner)
+{
+   for (AController* Controller : TActorRange<AController>(GetWorld()))
+   {
+        bool bIsWinner = Controller->IsPlayerController() == BIsPlayerWinner;
+        Controller->GameHasEnded(Controller->GetPawn(), bIsWinner);
+   } 
 }

@@ -15,9 +15,12 @@ class UE5_SIMPLESHOOTER_API AGameEndController : public APlayerController
 	GENERATED_BODY()
 
 public:
-	virtual void GameHasEnded(class AActor *EndGameFocus = nullptr, bool bIsWinner = false) override;
+	virtual void GameHasEnded(class AActor *EndGameFocus, bool bIsWinner) override;
 
 private:
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UUserWidget> LoseScreenClass;
+
 	UPROPERTY(EditAnywhere)
 	float RestartDelay = 5;
 

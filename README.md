@@ -587,3 +587,80 @@ C:\Doucement\UE5_SimpleShooter\Intermediate\Build\Win64\UnrealGame\Inc\UE5_Simpl
 ```c#
 PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG" });
 ```
+- In BP_GameEndController, change the loss game class to WBP_LossGameWidget
+# 39, Redesign the GameEnd() function (*IMPORTANT*)
+- purpose: designed to end the game for all controllers (both player and AI) and set a winning or losing state based on whether they match the `BIsPlayerWinner` parameter.
+- In EngineUtils.h
+- using
+```c++
+for (AController* Controller : TActorRange<AController>(GetWorld()))
+   {
+        bool bIsWinner = Controller->IsPlayerController() == BIsPlayerWinner;
+        Controller->GameHasEnded(Controller->GetPawn(), bIsWinner);
+   } 
+```
+- 1, check whether the winner is player or AI
+- 2, lock the playerloss scene view in `Controller->GetPawn()`
+- 3, show the who is the winner
+# 40, Enable the win widget and finish all win / lose Ui setting (*IMPORTANT*)
+- 1, create the winscreenwidget, if `bIsWinner` == player, then create the win widget; if not, create the lose widget
+```c++
+if (bIsWinner)
+    {
+        UUserWidget* LossGameScreenWidget = CreateWidget(this, WinScreenClass);
+        if (LossGameScreenWidget != nullptr)
+        {
+            LossGameScreenWidget -> AddToViewport();
+        }
+    }
+    else
+    {
+        UUserWidget* LossGameScreenWidget = CreateWidget(this, LoseScreenClass);
+        if (LossGameScreenWidget != nullptr)
+        {
+            LossGameScreenWidget -> AddToViewport();
+        }
+    }
+```
+- 2, Identify how to decide game win/lose
+- a, In UE5_TankGame, we do use to calculate all enemy number, and then if == 0, then win.
+- the cons is : if we change the gamemode often, then we need to fix the `SYNC`
+- b, In the AIcharacter.h, create a IsDead()function, seeking if this character is dead
+- pros: No need to run whole level, just check each enemy is alive.
+- In AIController.h
+```c++
+bool AShooterAIController::Is_Dead() const
+{
+    AShooterCharacter* ControlledCharacter = Cast<AShooterCharacter>(GetPawn());
+    if (ControlledCharacter != nullptr)
+    {
+        return ControlledCharacter->IsDead();
+    }
+
+    return false;
+}
+```
+- 3, In KilleAllEmGmaeBaseMode.cpp
+- we need a global loop to see if AI all dies, then gameend.
+```c++
+void AKilleAllEmyGameModeBase::PawnKilled(APawn *Pawn) // Pawn means the AI enemy
+{
+    Super::PawnKilled(Pawn);
+    
+    APlayerController* PlayerController = Cast<APlayerController>(Pawn->GetController());
+    if (PlayerController != nullptr)
+    {
+        GameEnd(false);
+    }
+
+    for (AShooterAIController* Controller : TActorRange<AShooterAIController>(GetWorld()))
+    {
+        if (!Controller->Is_Dead())
+        {
+            return;
+        }
+    }
+
+    GameEnd(true);
+}
+```

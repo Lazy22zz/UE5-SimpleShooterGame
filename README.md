@@ -664,3 +664,5 @@ void AKilleAllEmyGameModeBase::PawnKilled(APawn *Pawn) // Pawn means the AI enem
     GameEnd(true);
 }
 ```
+# 42, re-organize the Gun Trace
+- check the changes of code in Nov 13, 2024 

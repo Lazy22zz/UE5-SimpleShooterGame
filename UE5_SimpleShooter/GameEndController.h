@@ -17,6 +17,10 @@ class UE5_SIMPLESHOOTER_API AGameEndController : public APlayerController
 public:
 	virtual void GameHasEnded(class AActor *EndGameFocus, bool bIsWinner) override;
 
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
 private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> WinScreenClass;
@@ -25,8 +29,13 @@ private:
 	TSubclassOf<class UUserWidget> LoseScreenClass;
 
 	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UUserWidget> HUDClass;
+
+	UPROPERTY(EditAnywhere)
 	float RestartDelay = 5;
 
 	FTimerHandle RestartTimer;
+
+	UUserWidget* CrossHairScreenClass;
 
 };

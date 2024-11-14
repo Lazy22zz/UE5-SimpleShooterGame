@@ -26,6 +26,9 @@ void AShooterCharacter::BeginPlay()
 	Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("Weapon_Socket"));
 	Gun->SetOwner(this);
 
+	// Add the crosshair
+
+
 }
 
 float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
@@ -120,4 +123,9 @@ void AShooterCharacter::LookRightRate(float AxisValue)
 void AShooterCharacter::Shoot()
 {
 	Gun -> PullTrigger();
+}
+
+float AShooterCharacter::HealthRatio() const
+{
+    return HP/MaxHealth;
 }

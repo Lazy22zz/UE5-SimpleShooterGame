@@ -40,6 +40,12 @@ private:
 	UParticleSystem* ImpactEffect;
 
 	UPROPERTY(EditAnywhere)
+	USoundBase* GunSound;
+
+	UPROPERTY(EditAnywhere)
+	USoundBase* ImpactGunSound;
+
+	UPROPERTY(EditAnywhere)
 	float MaxRange_Bullet = 1000;
 
 	UPROPERTY(EditAnywhere)

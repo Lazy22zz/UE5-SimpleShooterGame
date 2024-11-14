@@ -4,10 +4,22 @@
 #include "GameEndController.h"
 #include "Blueprint/UserWidget.h"
 
+void AGameEndController::BeginPlay()
+{
+    Super::BeginPlay();
+    CrossHairScreenClass = CreateWidget(this, HUDClass);
+        if (CrossHairScreenClass != nullptr)
+        {
+            CrossHairScreenClass -> AddToViewport();
+        }
+}
+
 void AGameEndController::GameHasEnded(AActor *EndGameFocus, bool bIsWinner)
 {
     // Winner is Player Or AI
     Super::GameHasEnded(EndGameFocus, bIsWinner);
+
+    CrossHairScreenClass -> RemoveFromParent();
 
     if (bIsWinner)
     {
@@ -29,3 +41,4 @@ void AGameEndController::GameHasEnded(AActor *EndGameFocus, bool bIsWinner)
 
     GetWorldTimerManager().SetTimer(RestartTimer, this, &APlayerController::RestartLevel, RestartDelay);
 }
+

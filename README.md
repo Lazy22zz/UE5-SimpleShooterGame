@@ -668,6 +668,7 @@ void AKilleAllEmyGameModeBase::PawnKilled(APawn *Pawn) // Pawn means the AI enem
 - check the changes of code in Nov 13, 2024 
 - In commit a78c95c
 # 43, Add sound Effect
+- 1, Enable the usage of soundbase in Details
 - similiar the `#15, add a muzle for the gun`
 - In Gameplaystatics.h
 ```c++
@@ -682,3 +683,49 @@ static ENGINE_API void PlaySoundAtLocation(const UObject* WorldContextObject, US
 UGameplayStatics::SpawnSoundAttached(GunSound, Mesh, TEXT("MuzzleFlashSocket"));
 UGameplayStatics::SpawnSoundAtLocation(GetWorld(), ImpactGunSound, Hit.Location);
 ```
+- 2, Random the MultiSoundbase
+- create a blueprint soundbase, select the multi soundbases, in the A_SoundBase, right click
+- pick the random sounds, and add a modulator, then connect all together.
+- 3, Create a sound spatialization, which seems more like nature 3D sound in different distance
+- In A_soundcue, find the Attenuation,
+- In Attenuation Settings, create a new sound Attenuation.
+# 44, Add a new crossHair widget
+- In GameEndController.cpp
+```c++
+void AGameEndController::BeginPlay()
+{
+    Super::BeginPlay();
+    CrossHairScreenClass = CreateWidget(this, HUDClass);
+        if (CrossHairScreenClass != nullptr)
+        {
+            CrossHairScreenClass -> AddToViewport();
+        }
+}
+```
+- And , we need to remove the crosshair widget when game ends
+- `CrossHairScreenClass -> RemoveFromParent();` (IN UE5, We need to use RemoveFromParent())
+# 45, Create a health bar
+- In the crosshair widget, add progress bar
+- In ShooterCharacter.cpp,
+```c++
+float AShooterCharacter::HealthRatio() const
+{
+    return HP/MaxHealth;
+}
+```
+- then create a new bind, which connect from get player pawn -> cast to shootercharacter.
+# 46, Fixing aiming issue
+- What happen?: when rotate the controller, the player animation doesn't follow
+- IN ABP_ShooterCharacter, add a new animation
+- ![屏幕截图 2024-11-13 194752](https://github.com/user-attachments/assets/c627af42-1936-4d19-bf11-24829f5e5ca2)
+- In the Event Graph, using the subtract(get controler rotation - get player rotation)
+- Fix: The AI aiming from two different height position issue
+- In BT_Tree, change the player location to player, object
+- In BTService_PlayerLocationSeen.cpp
+```c++
+OwnerComp.GetBlackboardComponent() -> SetValueAsObject(GetSelectedBlackboardKey(), FocusPawn);
+```
+# 47, State Machine
+- Purpose : Enable switch two animations in a condition: change grounded animation to inair animation.
+- create a new static machine, add the required animation, hook the states.
+- in the 

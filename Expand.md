@@ -16,3 +16,6 @@ void AShooterCharacter::ControllerVibration()
 	}
 }
 ```
+# 2, Enable the switch cameras by blueprint
+- Create two camera components
+- ![屏幕截图 2024-11-17 113255](https://github.com/user-attachments/assets/0e1d884c-3ca3-4458-9a42-4a1b46a5af05)

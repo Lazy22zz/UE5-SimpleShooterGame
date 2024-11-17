@@ -7,6 +7,7 @@
 #include "ShooterCharacter.generated.h"
 
 //class AGun;
+class UCameraComponent;
 
 UCLASS()
 class UE5_SIMPLESHOOTER_API AShooterCharacter : public ACharacter
@@ -21,12 +22,21 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// calculate the damage direction comes from
+	FVector CalculateDamageDirection(AActor* DamageCauser);
+
+	UPROPERTY(BlueprintReadWrite)
+    bool bIsHit = false;
+
 public:	
 	UFUNCTION(BlueprintPure)
 	bool IsDead() const;
 
 	UFUNCTION(BlueprintPure)
 	float HealthRatio() const;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation")
+	FVector2D DamageDirectionForAnimation;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -38,6 +48,11 @@ public:
 
 	// called to shoot
 	void Shoot();
+
+	// Switch Weapon
+	void SwitchWeapon();
+
+
 private:
 	void MoveForward(float AxisValue);
 	void LookUp(float AxisValue);
@@ -45,6 +60,8 @@ private:
 	void LookRight(float AxisValue);
 	void LookUpRate(float AxisValue);
 	void LookRightRate(float AxisValue);
+
+	void SwitchWeaponMesh(int index);
 	
 
 	UPROPERTY(EditAnywhere)
@@ -57,8 +74,29 @@ private:
 	float HP = 0.0;
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<class AGun> GunClass;
+	TSubclassOf<class AGun> DefaultWeaponClass;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class AGun> WeaponAClass;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class AGun> WeaponBClass;
+
+	// Array for weapons
+	UPROPERTY()
+	TArray<AGun*> Weapons;
+
+	int32 WeaponIndex = 0;
 
 	UPROPERTY()
 	class AGun* Gun;
+
+	FTimerHandle TimeHandle;
+
+	void Is_NotHit() ;
+
+public:
+	// enable the controller vibration
+	void ControllerVibration();
+
 };

@@ -5,6 +5,8 @@
 #include "Gun.h"
 #include "Components/CapsuleComponent.h"
 #include "SimpleShooterGameModeBase.h"
+#include "TimerManager.h"
+#include "Camera/CameraComponent.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -21,22 +23,43 @@ void AShooterCharacter::BeginPlay()
 
 	HP = MaxHealth;
 
-	Gun = GetWorld() -> SpawnActor<AGun>(GunClass);
+	WeaponIndex = 0;
+
 	GetMesh()->HideBoneByName(TEXT("weapon_r"), EPhysBodyOp::PBO_None);
+
+	DefaultWeaponClass = WeaponAClass;
+	Gun = GetWorld() -> SpawnActor<AGun>(DefaultWeaponClass);
 	Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("Weapon_Socket"));
 	Gun->SetOwner(this);
-
-	// Add the crosshair
-
-
+	
 }
 
 float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
+
+	bIsHit = true;
+
 	float GetDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	GetDamage = FMath::Min(HP, GetDamage);
 	HP = HP - GetDamage;
 	UE_LOG(LogTemp, Warning, TEXT("Health Left: %f"), HP);
+
+	FVector DamageDirection = CalculateDamageDirection(DamageCauser);
+	UE_LOG(LogTemp, Warning, TEXT("Damage Direction: %s"), *DamageDirection.ToString());
+
+	GetWorldTimerManager().SetTimer(
+		TimeHandle,
+		this, 
+		&AShooterCharacter::Is_NotHit,
+		1.0f,
+		true
+	);
+
+	// Convert 3D direction to 2D for Blend Space
+	DamageDirectionForAnimation = FVector2D(
+		FVector::DotProduct(GetActorRightVector(), DamageDirection),  // X (Left/Right)
+		FVector::DotProduct(GetActorForwardVector(), DamageDirection) // Y (Front/Back)
+	);
 
 	if (IsDead())
 	{
@@ -49,7 +72,6 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 		DetachFromControllerPendingDestroy();
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
-
 
 	return GetDamage;
 }
@@ -87,6 +109,8 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent -> BindAxis (TEXT("LookUpRate"), this, &AShooterCharacter::LookUpRate );
 	PlayerInputComponent -> BindAxis (TEXT("LookRightRate"), this, &AShooterCharacter::LookRightRate);
 	PlayerInputComponent -> BindAction (TEXT("Shoot"), EInputEvent::IE_Pressed, this, &AShooterCharacter::Shoot);
+	PlayerInputComponent -> BindAction(TEXT("SwitchWeapon"), EInputEvent::IE_Pressed, this, &AShooterCharacter::SwitchWeapon);
+	PlayerInputComponent -> BindAction(TEXT("ControllerVibration"), EInputEvent::IE_Released, this, &AShooterCharacter::ControllerVibration);
 	
 }
 
@@ -125,7 +149,69 @@ void AShooterCharacter::Shoot()
 	Gun -> PullTrigger();
 }
 
+void AShooterCharacter::SwitchWeapon()
+{
+	WeaponIndex += 1;
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("Switching Weapons ..."));
+
+    // Hide the currently equipped weapon
+    if (Gun) 
+    {
+        Gun->SetActorHiddenInGame(true);
+    }
+
+	if (WeaponIndex % 2 == 0)
+    {
+        DefaultWeaponClass = WeaponAClass;
+    }
+    else
+    {
+        DefaultWeaponClass = WeaponBClass;
+    }
+
+    // Spawn the new weapon
+    if (DefaultWeaponClass)
+    {
+        Gun = GetWorld()->SpawnActor<AGun>(DefaultWeaponClass);
+        if (Gun)
+        {
+            Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("Weapon_Socket"));
+            Gun->SetOwner(this);
+            Gun->SetActorHiddenInGame(false); // Ensure the new weapon is visible
+        }
+    }
+}
+
 float AShooterCharacter::HealthRatio() const
 {
     return HP/MaxHealth;
+}
+
+FVector AShooterCharacter::CalculateDamageDirection(AActor *DamageCauser)
+{
+	if (!DamageCauser)
+    {
+        return FVector::ZeroVector; // No direction if there's no damage causer
+    }
+
+	FVector DamageDirection = DamageCauser->GetActorLocation() - GetActorLocation();
+	DamageDirection.Normalize();
+
+    return DamageDirection;
+}
+
+void AShooterCharacter::Is_NotHit()
+{
+    bIsHit = false;
+}
+
+void AShooterCharacter::ControllerVibration()
+{
+	APlayerController* PController = Cast<APlayerController>(GetController());
+
+	if (PController)
+	{
+		PController -> PlayDynamicForceFeedback(1.0f, 0.4f, true, true, true, true);
+	}
 }

@@ -39,6 +39,9 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 
 	bIsHit = true;
 
+	//player camera shake
+	GetWorld() -> GetFirstPlayerController() -> ClientStartCameraShake(HitCameraShakeClass);
+
 	float GetDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	GetDamage = FMath::Min(HP, GetDamage);
 	HP = HP - GetDamage;

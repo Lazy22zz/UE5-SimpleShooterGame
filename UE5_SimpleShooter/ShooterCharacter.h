@@ -99,4 +99,9 @@ public:
 	// enable the controller vibration
 	void ControllerVibration();
 
+
+private:
+	// enable the camera shake 
+	UPROPERTY(EditAnywhere, category = "combat")
+	TSubclassOf< class UCameraShakeBase> HitCameraShakeClass;
 };

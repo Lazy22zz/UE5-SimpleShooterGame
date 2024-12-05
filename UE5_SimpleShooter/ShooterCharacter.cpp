@@ -7,12 +7,16 @@
 #include "SimpleShooterGameModeBase.h"
 #include "TimerManager.h"
 #include "Camera/CameraComponent.h"
+#include "Kismet/GameplayStatics.h"
+
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	bIsMoving = false; // Not moving at the start
 
 }
 
@@ -41,6 +45,9 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 
 	//player camera shake
 	GetWorld() -> GetFirstPlayerController() -> ClientStartCameraShake(HitCameraShakeClass);
+
+	//get get hit vibration
+	GetHitVibration();
 
 	float GetDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	GetDamage = FMath::Min(HP, GetDamage);
@@ -113,13 +120,23 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent -> BindAxis (TEXT("LookRightRate"), this, &AShooterCharacter::LookRightRate);
 	PlayerInputComponent -> BindAction (TEXT("Shoot"), EInputEvent::IE_Pressed, this, &AShooterCharacter::Shoot);
 	PlayerInputComponent -> BindAction(TEXT("SwitchWeapon"), EInputEvent::IE_Pressed, this, &AShooterCharacter::SwitchWeapon);
-	PlayerInputComponent -> BindAction(TEXT("ControllerVibration"), EInputEvent::IE_Released, this, &AShooterCharacter::ControllerVibration);
+	PlayerInputComponent -> BindAction(TEXT("ControllerVibration"), EInputEvent::IE_Released, this, &AShooterCharacter::ShootingVibration);
 	
 }
 
 void AShooterCharacter::MoveForward(float AxisValue)
 {
-	AddMovementInput(GetActorForwardVector() * AxisValue);
+	if (FMath::Abs(AxisValue) > KINDA_SMALL_NUMBER) // Detect significant input
+    {
+        bIsMoving = true;
+        MovingVibration();
+    }
+    else
+    {
+        bIsMoving = false; // Stop movement when input ceases
+    }
+
+    AddMovementInput(GetActorForwardVector() * AxisValue);
 }
 
 void AShooterCharacter::LookUp(float AxisValue)
@@ -129,7 +146,17 @@ void AShooterCharacter::LookUp(float AxisValue)
 
 void AShooterCharacter::MoveRight(float AxisValue)
 {
-	AddMovementInput(GetActorRightVector() * AxisValue);
+	if (FMath::Abs(AxisValue) > KINDA_SMALL_NUMBER) // Detect significant input
+    {
+        bIsMoving = true;
+        MovingVibration();
+    }
+    else
+    {
+        bIsMoving = false; // Stop movement when input ceases
+    }
+
+    AddMovementInput(GetActorRightVector() * AxisValue);
 }
 
 void AShooterCharacter::LookRight(float AxisValue)
@@ -209,12 +236,50 @@ void AShooterCharacter::Is_NotHit()
     bIsHit = false;
 }
 
-void AShooterCharacter::ControllerVibration()
+void AShooterCharacter::ShootingVibration()
 {
 	APlayerController* PController = Cast<APlayerController>(GetController());
 
 	if (PController)
 	{
-		PController -> PlayDynamicForceFeedback(1.0f, 0.4f, true, true, true, true);
+		PController -> PlayDynamicForceFeedback(0.5f, 0.25f, true, true, true, true);
+	}
+}
+
+void AShooterCharacter::MovingVibration()
+{
+    if (!bIsMoving) return; // Exit if no movement input
+
+    static bool bLeftFoot = true; // Tracks which foot to vibrate
+    APlayerController* PlayerController = Cast<APlayerController>(GetController());
+    if (!PlayerController) return;
+
+    if (bLeftFoot)
+    {
+        PlayerController->PlayDynamicForceFeedback(
+            0.05f, 0.02f, true, true, false, false,
+            EDynamicForceFeedbackAction::Start,
+            FDynamicForceFeedbackHandle()
+        );
+    }
+    else
+    {
+        PlayerController->PlayDynamicForceFeedback(
+            0.05f, 0.02f, false, false, true, true,
+            EDynamicForceFeedbackAction::Start,
+            FDynamicForceFeedbackHandle()
+        );
+    }
+
+    bLeftFoot = !bLeftFoot;
+}
+
+void AShooterCharacter::GetHitVibration()
+{
+	APlayerController* PController = Cast<APlayerController>(GetController());
+
+	if (PController)
+	{
+		PController -> PlayDynamicForceFeedback(0.9f, 0.1f, true, true, true, true);
 	}
 }

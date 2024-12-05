@@ -96,12 +96,21 @@ private:
 	void Is_NotHit() ;
 
 public:
-	// enable the controller vibration
-	void ControllerVibration();
+	// enable the Shooting vibration
+	void ShootingVibration();
 
+	// enable the moving vibration
+	void MovingVibration();
+
+	// enable get shoot vibration
+	void GetHitVibration();
 
 private:
 	// enable the camera shake 
 	UPROPERTY(EditAnywhere, category = "combat")
 	TSubclassOf< class UCameraShakeBase> HitCameraShakeClass;
+
+	bool bIsMoving; // Tracks if the character is actively moving
+
+
 };

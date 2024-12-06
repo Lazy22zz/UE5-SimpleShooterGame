@@ -8,6 +8,10 @@
 #include "TimerManager.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/TextBlock.h"
+#include "Blueprint/UserWidget.h"
+
+
 
 
 // Sets default values
@@ -50,9 +54,30 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 	GetHitVibration();
 
 	float GetDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	UE_LOG(LogTemp, Warning, TEXT("DisplayDamageWidget called!"));
+
+	if (GetDamage > 0.0f && DamageWidgetClass)
+	{
+		UUserWidget* DamageWidget = CreateWidget<UUserWidget>(GetWorld(), DamageWidgetClass);
+        if (DamageWidget)
+        {
+            DamageWidget->AddToViewport();
+
+			// Set the damage value
+			SetDamageValue(DamageWidget, GetDamage);
+			
+        }
+
+		   // Call the function to play a random animation
+		   PlayRandomDynamicDamageWidgetAni(DamageWidget);
+            
+    }
+
+
 	GetDamage = FMath::Min(HP, GetDamage);
 	HP = HP - GetDamage;
 	UE_LOG(LogTemp, Warning, TEXT("Health Left: %f"), HP);
+
 
 	FVector DamageDirection = CalculateDamageDirection(DamageCauser);
 	UE_LOG(LogTemp, Warning, TEXT("Damage Direction: %s"), *DamageDirection.ToString());
@@ -282,4 +307,28 @@ void AShooterCharacter::GetHitVibration()
 	{
 		PController -> PlayDynamicForceFeedback(0.9f, 0.1f, true, true, true, true);
 	}
+}
+
+void AShooterCharacter::SetDamageValue(UUserWidget* DamageWidget, float GetDamage)
+{
+	UFunction* SetDamageTextFunction = DamageWidget->FindFunction(TEXT("SetDamageText"));
+			if (SetDamageTextFunction)
+			{
+				struct FDamageValue
+				{
+					float DamageValue;
+				} Params;
+
+            Params.DamageValue = GetDamage;
+            DamageWidget->ProcessEvent(SetDamageTextFunction, &Params);
+			}
+}
+
+void AShooterCharacter::PlayRandomDynamicDamageWidgetAni(UUserWidget* DamageWidget)
+{
+	UFunction* PlayRandomAnimationFunction = DamageWidget->FindFunction(TEXT("PlayRandomAnimation"));
+            if (PlayRandomAnimationFunction)
+            {
+                DamageWidget->ProcessEvent(PlayRandomAnimationFunction, nullptr);
+            }
 }

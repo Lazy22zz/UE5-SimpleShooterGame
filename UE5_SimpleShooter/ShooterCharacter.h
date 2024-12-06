@@ -38,6 +38,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation")
 	FVector2D DamageDirectionForAnimation;
 
+	// enable the get damage number output widget
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> DamageWidgetClass;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -51,7 +55,6 @@ public:
 
 	// Switch Weapon
 	void SwitchWeapon();
-
 
 private:
 	void MoveForward(float AxisValue);
@@ -112,5 +115,9 @@ private:
 
 	bool bIsMoving; // Tracks if the character is actively moving
 
+private:
+	void SetDamageValue(UUserWidget* DamageWidget, float GetDamage);
+
+	void PlayRandomDynamicDamageWidgetAni(UUserWidget* DamageWidget);
 
 };

@@ -37,9 +37,28 @@ void AGun::PullTrigger()
 		AActor* HitActor = Hit.GetActor();
 		if (HitActor != nullptr)
 		{
-			FPointDamageEvent DamageEvent(Gun_Damage, Hit, ShotDirection, nullptr);
+			float AppliedDamage = Gun_Damage;
+			UE_LOG(LogTemp, Warning, TEXT("Hit Component: %s"), *Hit.Component->GetName());
+
+			if (Hit.Component -> GetName() == TEXT("HeadCollision"))
+			{
+				AppliedDamage = AppliedDamage * 100000.f;
+			}
+			else if (Hit.Component -> GetName() == TEXT("BodyCollision"))
+			{
+				AppliedDamage = AppliedDamage * 0.5f;
+			}
+			else if (Hit.Component -> GetName() == TEXT("FootCollision"))
+			{
+				AppliedDamage = AppliedDamage * 0.2f;
+			}
+			else
+			{
+				AppliedDamage = AppliedDamage * 0.1f;
+			}
+			FPointDamageEvent DamageEvent(AppliedDamage, Hit, ShotDirection, nullptr);
 			AController *OwnerController = GetOwnerController();
-			HitActor->TakeDamage(Gun_Damage, DamageEvent, OwnerController, this);
+			HitActor->TakeDamage(AppliedDamage, DamageEvent, OwnerController, this);
 		}
 	}
 }
@@ -59,7 +78,34 @@ bool AGun::GunTrace(FHitResult &Hit, FVector& ShotDirection)
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
 	Params.AddIgnoredActor(GetOwner());
-	return GetWorld()->LineTraceSingleByChannel(Hit, Location, End, ECollisionChannel::ECC_GameTraceChannel1, Params);
+	TArray<FHitResult> Hits;
+    bool bHitSomething = GetWorld()->LineTraceMultiByChannel(Hits, Location, End, ECC_GameTraceChannel1, Params);
+
+    if (bHitSomething)
+    {
+        for (const FHitResult& SingleHit : Hits)
+        {
+            if (SingleHit.Component->GetName() == TEXT("HeadCollision"))
+            {
+                Hit = SingleHit;
+                return true; // Break the loop when the desired component is hit
+            }
+			else if (SingleHit.Component->GetName() == TEXT("BodyCollision"))
+            {
+                Hit = SingleHit;
+                return true; // Break the loop when the desired component is hit
+            }
+			else if (SingleHit.Component->GetName() == TEXT("FootCollision"))
+            {
+                Hit = SingleHit;
+                return true; // Break the loop when the desired component is hit
+            }
+        }
+        // If no special collision was hit, fall back to the first valid hit
+        Hit = Hits[0];
+    }
+
+    return bHitSomething;
 }
 
 AController* AGun::GetOwnerController() const

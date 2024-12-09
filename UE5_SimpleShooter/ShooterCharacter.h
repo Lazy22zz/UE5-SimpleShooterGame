@@ -9,6 +9,7 @@
 //class AGun;
 class UCameraComponent;
 
+
 UCLASS()
 class UE5_SIMPLESHOOTER_API AShooterCharacter : public ACharacter
 {
@@ -117,7 +118,7 @@ private:
 
 private:
 	void SetDamageValue(UUserWidget* DamageWidget, float GetDamage);
-
+	
 	void PlayRandomDynamicDamageWidgetAni(UUserWidget* DamageWidget);
 
 };

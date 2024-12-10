@@ -92,9 +92,6 @@ private:
 
 	int32 WeaponIndex = 0;
 
-	UPROPERTY()
-	class AGun* Gun;
-
 	FTimerHandle TimeHandle;
 
 	void Is_NotHit() ;
@@ -109,6 +106,10 @@ public:
 	// enable get shoot vibration
 	void GetHitVibration();
 
+	// enable to get the gun damaged
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Weapon")
+	class AGun* Gun;
+
 private:
 	// enable the camera shake 
 	UPROPERTY(EditAnywhere, category = "combat")
@@ -117,8 +118,8 @@ private:
 	bool bIsMoving; // Tracks if the character is actively moving
 
 private:
-	void SetDamageValue(UUserWidget* DamageWidget, float GetDamage);
+	 void SetDamageValue(UUserWidget* DamageWidget, float GetDamage);
 	
-	void PlayRandomDynamicDamageWidgetAni(UUserWidget* DamageWidget);
+	 void PlayRandomDynamicDamageWidgetAni(UUserWidget* DamageWidget);
 
 };

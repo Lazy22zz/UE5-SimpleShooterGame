@@ -54,7 +54,7 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 	GetHitVibration();
 
 	float GetDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	UE_LOG(LogTemp, Warning, TEXT("DisplayDamageWidget called!"));
+	//UE_LOG(LogTemp, Warning, TEXT("DisplayDamageWidget called!"));
 
 	if (GetDamage > 0.0f && DamageWidgetClass)
 	{
@@ -65,11 +65,11 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 
 			// Set the damage value
 			SetDamageValue(DamageWidget, GetDamage);
+
+			// Call the function to play a random animation
+		    PlayRandomDynamicDamageWidgetAni(DamageWidget);
 			
         }
-
-		   // Call the function to play a random animation
-		   PlayRandomDynamicDamageWidgetAni(DamageWidget);
             
     }
 
@@ -309,9 +309,9 @@ void AShooterCharacter::GetHitVibration()
 	}
 }
 
-void AShooterCharacter::SetDamageValue(UUserWidget* DamageWidget, float GetDamage)
+ void AShooterCharacter::SetDamageValue(UUserWidget* DamageWidget, float GetDamage)
 {
-	UFunction* SetDamageTextFunction = DamageWidget->FindFunction(TEXT("SetDamageText"));
+	UFunction* SetDamageTextFunction = DamageWidget->FindFunction(TEXT("DisplayWidget"));
 			if (SetDamageTextFunction)
 			{
 				struct FDamageValue
@@ -323,6 +323,7 @@ void AShooterCharacter::SetDamageValue(UUserWidget* DamageWidget, float GetDamag
             DamageWidget->ProcessEvent(SetDamageTextFunction, &Params);
 			}
 }
+
 
 void AShooterCharacter::PlayRandomDynamicDamageWidgetAni(UUserWidget* DamageWidget)
 {

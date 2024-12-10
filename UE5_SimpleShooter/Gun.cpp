@@ -56,6 +56,10 @@ void AGun::PullTrigger()
 			{
 				AppliedDamage = AppliedDamage * 0.1f;
 			}
+
+			// grab the damage value;
+			GetDamage = AppliedDamage;
+			
 			FPointDamageEvent DamageEvent(AppliedDamage, Hit, ShotDirection, nullptr);
 			AController *OwnerController = GetOwnerController();
 			HitActor->TakeDamage(AppliedDamage, DamageEvent, OwnerController, this);

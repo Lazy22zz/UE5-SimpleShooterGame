@@ -55,4 +55,8 @@ private:
 
 	AController* GetOwnerController() const;
 
+public:
+	UPROPERTY(EditAnywhere, BluePrintReadWrite, Category = "Damage")
+	float GetDamage = 0.0f;
+
 };

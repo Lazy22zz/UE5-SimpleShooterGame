@@ -63,8 +63,8 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
         {
             DamageWidget->AddToViewport();
 
-			// Set the damage value
-			SetDamageValue(DamageWidget, GetDamage);
+			// display the dynamicdamage ui
+			DisplayDamageAni(DamageWidget, GetDamage);
 
 			// Call the function to play a random animation
 		    PlayRandomDynamicDamageWidgetAni(DamageWidget);
@@ -72,7 +72,6 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
         }
             
     }
-
 
 	GetDamage = FMath::Min(HP, GetDamage);
 	HP = HP - GetDamage;
@@ -309,19 +308,10 @@ void AShooterCharacter::GetHitVibration()
 	}
 }
 
- void AShooterCharacter::SetDamageValue(UUserWidget* DamageWidget, float GetDamage)
+ void AShooterCharacter::DisplayDamageAni(UUserWidget* DamageWidget, float GetDamage)
 {
 	UFunction* SetDamageTextFunction = DamageWidget->FindFunction(TEXT("DisplayWidget"));
-			if (SetDamageTextFunction)
-			{
-				struct FDamageValue
-				{
-					float DamageValue;
-				} Params;
-
-            Params.DamageValue = GetDamage;
-            DamageWidget->ProcessEvent(SetDamageTextFunction, &Params);
-			}
+	DamageWidget->ProcessEvent(SetDamageTextFunction, nullptr);
 }
 
 

@@ -118,7 +118,7 @@ private:
 	bool bIsMoving; // Tracks if the character is actively moving
 
 private:
-	 void SetDamageValue(UUserWidget* DamageWidget, float GetDamage);
+	 void DisplayDamageAni(UUserWidget* DamageWidget, float GetDamage);
 	
 	 void PlayRandomDynamicDamageWidgetAni(UUserWidget* DamageWidget);
 

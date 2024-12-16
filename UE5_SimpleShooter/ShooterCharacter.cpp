@@ -68,6 +68,9 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 
 			// Call the function to play a random animation
 		    PlayRandomDynamicDamageWidgetAni(DamageWidget);
+
+			// headshot vibration
+			DetectHeadShotVibration(GetDamage);
 			
         }
             
@@ -304,7 +307,17 @@ void AShooterCharacter::GetHitVibration()
 
 	if (PController)
 	{
-		PController -> PlayDynamicForceFeedback(0.9f, 0.1f, true, true, true, true);
+		PController -> PlayDynamicForceFeedback(0.4f, 0.1f, true, true, true, true);
+	}
+}
+
+void AShooterCharacter::GetHeadShotVibration()
+{
+	APlayerController* PController = Cast<APlayerController>(GetController());
+
+	if (PController)
+	{
+		PController -> PlayDynamicForceFeedback(0.7f, 0.05f, false, true, false, true);
 	}
 }
 
@@ -322,4 +335,12 @@ void AShooterCharacter::PlayRandomDynamicDamageWidgetAni(UUserWidget* DamageWidg
             {
                 DamageWidget->ProcessEvent(PlayRandomAnimationFunction, nullptr);
             }
+}
+
+void AShooterCharacter::DetectHeadShotVibration(float damage)
+{
+	if (damage >= MaxHealth)
+	{
+		GetHeadShotVibration();
+	}
 }

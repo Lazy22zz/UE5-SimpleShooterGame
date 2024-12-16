@@ -90,11 +90,17 @@ private:
 	UPROPERTY()
 	TArray<AGun*> Weapons;
 
+	// enable the camera shake 
+	UPROPERTY(EditAnywhere, category = "combat")
+	TSubclassOf< class UCameraShakeBase> HitCameraShakeClass;
+
 	int32 WeaponIndex = 0;
 
 	FTimerHandle TimeHandle;
 
 	void Is_NotHit() ;
+
+	bool bIsMoving; // Tracks if the character is actively moving
 
 public:
 	// enable the Shooting vibration
@@ -106,20 +112,20 @@ public:
 	// enable get shoot vibration
 	void GetHitVibration();
 
+	// headshot vibration
+	void GetHeadShotVibration();
+
 	// enable to get the gun damaged
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Weapon")
 	class AGun* Gun;
 
 private:
-	// enable the camera shake 
-	UPROPERTY(EditAnywhere, category = "combat")
-	TSubclassOf< class UCameraShakeBase> HitCameraShakeClass;
 
-	bool bIsMoving; // Tracks if the character is actively moving
+	void DetectHeadShotVibration(float damage);
 
 private:
-	 void DisplayDamageAni(UUserWidget* DamageWidget, float GetDamage);
+	void DisplayDamageAni(UUserWidget* DamageWidget, float GetDamage);
 	
-	 void PlayRandomDynamicDamageWidgetAni(UUserWidget* DamageWidget);
+	void PlayRandomDynamicDamageWidgetAni(UUserWidget* DamageWidget);
 
 };

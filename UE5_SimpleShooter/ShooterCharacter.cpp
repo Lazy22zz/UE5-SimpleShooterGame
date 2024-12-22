@@ -148,7 +148,7 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent -> BindAction (TEXT("Shoot"), EInputEvent::IE_Pressed, this, &AShooterCharacter::Shoot);
 	PlayerInputComponent -> BindAction(TEXT("SwitchWeapon"), EInputEvent::IE_Pressed, this, &AShooterCharacter::SwitchWeapon);
 	PlayerInputComponent -> BindAction(TEXT("ControllerVibration"), EInputEvent::IE_Released, this, &AShooterCharacter::ShootingVibration);
-	
+
 }
 
 void AShooterCharacter::MoveForward(float AxisValue)
@@ -203,7 +203,11 @@ void AShooterCharacter::LookRightRate(float AxisValue)
 
 void AShooterCharacter::Shoot()
 {
-	Gun -> PullTrigger();
+	// give a condition to decide when the ammo_num is cable
+	if (CanIPullTrigger()){
+		Gun -> DecreaseAmmo();
+		Gun -> PullTrigger();
+	}
 }
 
 void AShooterCharacter::SwitchWeapon()
@@ -307,7 +311,7 @@ void AShooterCharacter::GetHitVibration()
 
 	if (PController)
 	{
-		PController -> PlayDynamicForceFeedback(0.4f, 0.1f, true, true, true, true);
+		PController -> PlayDynamicForceFeedback(0.4f, 0.1f, true, false, true, false);
 	}
 }
 
@@ -317,7 +321,7 @@ void AShooterCharacter::GetHeadShotVibration()
 
 	if (PController)
 	{
-		PController -> PlayDynamicForceFeedback(0.7f, 0.05f, false, true, false, true);
+		PController -> PlayDynamicForceFeedback(1.0f, 0.15f, true, true, true, true);
 	}
 }
 
@@ -343,4 +347,14 @@ void AShooterCharacter::DetectHeadShotVibration(float damage)
 	{
 		GetHeadShotVibration();
 	}
+}
+
+bool AShooterCharacter::CanIPullTrigger()
+{
+	if (Gun -> GetAmmoCount() > 0)
+	{
+		return true;
+	}
+	return false;
+    
 }

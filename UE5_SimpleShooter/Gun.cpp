@@ -120,6 +120,15 @@ AController* AGun::GetOwnerController() const
 	return OwnerPawn->GetController();
 }
 
+void AGun::DecreaseAmmo()
+{
+	if (Num_Ammo > 0)
+    {
+        Num_Ammo--;
+		OnAmmoChanged.Broadcast(Num_Ammo); // Notify listeners of the change
+    }
+}
+
 
 // Called when the game starts or when spawned
 void AGun::BeginPlay()

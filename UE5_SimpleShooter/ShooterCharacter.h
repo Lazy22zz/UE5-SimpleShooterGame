@@ -9,7 +9,6 @@
 //class AGun;
 class UCameraComponent;
 
-
 UCLASS()
 class UE5_SIMPLESHOOTER_API AShooterCharacter : public ACharacter
 {
@@ -66,8 +65,9 @@ private:
 	void LookRightRate(float AxisValue);
 
 	void SwitchWeaponMesh(int index);
-	
 
+	bool CanIPullTrigger();
+	
 	UPROPERTY(EditAnywhere)
 	float RotationRate = 10;
 
@@ -98,7 +98,7 @@ private:
 
 	FTimerHandle TimeHandle;
 
-	void Is_NotHit() ;
+	void Is_NotHit();
 
 	bool bIsMoving; // Tracks if the character is actively moving
 
@@ -127,5 +127,6 @@ private:
 	void DisplayDamageAni(UUserWidget* DamageWidget, float GetDamage);
 	
 	void PlayRandomDynamicDamageWidgetAni(UUserWidget* DamageWidget);
+
 
 };
